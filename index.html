@@ -10880,7 +10880,11 @@ body.dm-commercial-app-launching #dmAppLaunchScreen{display:flex}
  function waitOpen(attempt=0){if(openFullCommercial()||attempt>=200)return;setTimeout(()=>waitOpen(attempt+1),100)}
  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installEvent=event;ensureInstallButton()});
  window.addEventListener('appinstalled',()=>{const button=document.getElementById('dmAppInstall');if(button)button.textContent='APP instalada'});
- document.addEventListener('click',event=>{if(event.target?.closest?.('#authSubmit'))setTimeout(()=>waitOpen(),40)},true);
+ function scheduleOpenAfterLogin(){setTimeout(()=>waitOpen(),40)}
+ document.addEventListener('click',event=>{if(event.target?.closest?.('#authSubmit'))scheduleOpenAfterLogin()},true);
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&event.target?.closest?.('#authPassword'))scheduleOpenAfterLogin();
+ },true);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>waitOpen(),{once:true});else waitOpen();
  if('serviceWorker' in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(error=>console.warn('Service worker:',error)));
 })();
